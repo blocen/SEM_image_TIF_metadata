@@ -2,8 +2,8 @@ from typing import Union
 
 from tifffile import TiffFile
 
-from SEMMetadata import SEMMetadata
-from ZeissSEMMetadata import ZeissSEMMetadata
+from hitachi_metadata import SEMMetadata
+from zeiss_metadata import ZeissSEMMetadata
 
 SemMetadata = Union[SEMMetadata, ZeissSEMMetadata]
 
@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     paths = sorted(glob.glob("examples/*.tif"))
     if not paths:
-        raise SystemExit("No examples found. Run: python make_examples.py")
+        raise SystemExit("No examples found. Run: python hitachi_make_examples.py")
 
     for path in paths:
         print(f"\n=== {path} ===")

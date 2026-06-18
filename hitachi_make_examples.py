@@ -80,7 +80,7 @@ def main() -> None:
     rng = np.random.default_rng(0)
     for i, meta in enumerate(EXAMPLES, start=1):
         image = rng.integers(0, 256, size=(480, 640), dtype=np.uint8)
-        path = f"examples/sem_example_{i}.tif"
+        path = f"examples/hitachi_example_{i}.tif"
         imwrite(path, image, description=_to_ini(meta))
         print(f"wrote {path}")
 
