@@ -64,6 +64,13 @@ def _parse_hitachi(tif: TiffFile) -> SEMMetadata:
     return SEMMetadata.model_validate(extracted_dict)
 
 
+def detect_vendor(filepath: str) -> str:
+    """Return 'zeiss' or 'hitachi' for a SEM TIFF, based on the embedded tags."""
+    with TiffFile(filepath) as tif:
+        cz = tif.pages[0].tags.get(CZ_SEM_TAG)
+        return "zeiss" if cz is not None and isinstance(cz.value, dict) else "hitachi"
+
+
 def parse_sem_file(filepath: str) -> SemMetadata:
     """Parse a Hitachi or Zeiss SEM TIFF, dispatching on the embedded metadata."""
     with TiffFile(filepath) as tif:
