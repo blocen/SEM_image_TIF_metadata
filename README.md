@@ -11,6 +11,10 @@ TIFF tags:
   [hitachi_metadata.py](hitachi_metadata.py), the flexible `HitachiSEMImage` in
   [hitachi_image.py](hitachi_image.py), and `TM3000Metadata` (tabletop TM3000
   `.txt` sidecar) in [hitachi_tm3000_metadata.py](hitachi_tm3000_metadata.py).
+- **Hitachi TEM** — transmission electron microscopes (HT7700 / HT7800), flat
+  `key=value` block written both as a `.txt` sidecar and into the TIFF
+  ImageDescription. Model: `HitachiTEMMetadata` in
+  [hitachi_tem_metadata.py](hitachi_tem_metadata.py).
 
 ## Setup
 
@@ -27,6 +31,8 @@ The `examples/` directory contains:
 - `1908*.tif` — real Zeiss Supra 40 images.
 - `hitachi_example_*.tif` — synthetic Hitachi TIFFs (generated, see below).
 - `hitachi_tm3000_example.txt` — a Hitachi TM3000 metadata sidecar.
+- `hitachi_tem_example_*.tif` / `hitachi_tem_example.txt` — synthetic Hitachi
+  TEM (HT7700/HT7800) images and sidecar (generated, see below).
 
 ### Run the Zeiss + Hitachi TIFF parser
 
@@ -88,7 +94,45 @@ meta = TM3000Metadata.from_file("examples/hitachi_tm3000_example.txt")
 print(meta.data_width, meta.data_height)
 ```
 
-## Convert TIFFs to PNG
+### Run the Hitachi TEM parser
+
+Hitachi transmission electron microscopes (HT7700 / HT7800) write a flat
+`key=value` block as a `.txt` sidecar and also embed it in the TIFF
+ImageDescription. `HitachiTEMMetadata` reads either source. Generate the
+synthetic examples first:
+
+```bash
+python hitachi_tem_make_examples.py   # writes examples/hitachi_tem_example_*.tif + .txt
+```
+
+Then load one:
+
+```bash
+python load_hitachi_tem.py                              # bundled .tif example
+python load_hitachi_tem.py examples/hitachi_tem_example_2.tif
+python load_hitachi_tem.py examples/hitachi_tem_example.txt   # the .txt sidecar
+```
+
+In code:
+
+```python
+from hitachi_tem_metadata import HitachiTEMMetadata
+
+meta = HitachiTEMMetadata.from_tiff("examples/hitachi_tem_example_1.tif")
+meta = HitachiTEMMetadata.from_file("examples/hitachi_tem_example.txt")
+print(meta.accelerating_voltage_kv, meta.imaging_mode, meta.image_width)
+```
+
+The TEM examples are kept out of the SEM `parse_sem_file` dispatcher and
+`convert_to_png` (which auto-detect Zeiss vs. Hitachi *SEM*); convert them with
+their own script:
+
+```bash
+python convert_tem_to_png.py
+# examples/hitachi_tem_example_1.tif -> converted/hitachi_tem_example_1.png
+```
+
+## Convert SEM TIFFs to PNG
 
 Converts every `examples/*.tif` to PNG in `converted/`, tagging each output
 filename with the detected vendor (via `detect_vendor`):

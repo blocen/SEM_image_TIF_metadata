@@ -13,7 +13,14 @@ OUT_DIR = Path("converted")
 
 def main() -> None:
     OUT_DIR.mkdir(exist_ok=True)
-    tifs = sorted(p for p in SRC_DIR.iterdir() if p.suffix.lower() in {".tif", ".tiff"})
+    # Hitachi TEM TIFFs are handled by convert_tem_to_png.py, not the
+    # Zeiss/Hitachi-SEM vendor detection used here.
+    tifs = sorted(
+        p
+        for p in SRC_DIR.iterdir()
+        if p.suffix.lower() in {".tif", ".tiff"}
+        and not p.stem.startswith("hitachi_tem")
+    )
     for tif in tifs:
         vendor = detect_vendor(str(tif))
         stem = tif.stem if tif.stem.startswith(vendor) else f"{vendor}_{tif.stem}"

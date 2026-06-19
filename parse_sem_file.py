@@ -83,7 +83,12 @@ def parse_sem_file(filepath: str) -> SemMetadata:
 if __name__ == "__main__":
     import glob
 
-    paths = sorted(glob.glob("examples/*.tif"))
+    # Hitachi TEM TIFFs use a different (non-SEM) metadata block; see
+    # hitachi_tem_metadata.py.
+    paths = sorted(
+        p for p in glob.glob("examples/*.tif")
+        if not p.rsplit("/", 1)[-1].startswith("hitachi_tem")
+    )
     if not paths:
         raise SystemExit("No examples found. Run: python hitachi_make_examples.py")
 
